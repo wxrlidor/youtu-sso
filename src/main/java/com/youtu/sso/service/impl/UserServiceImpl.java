@@ -79,6 +79,8 @@ public class UserServiceImpl implements UserService {
 		// 补全pojo
 		user.setCreated(new Date());
 		user.setUpdated(new Date());
+		//用户状态 1--启用  2--注销
+		user.setStatus((byte) 1);
 		// 使用spring自带工具对密码进行MD5加密
 		String md5Pwd = DigestUtils.md5DigestAsHex(user.getPassword().getBytes());
 		user.setPassword(md5Pwd);
@@ -97,6 +99,8 @@ public class UserServiceImpl implements UserService {
 		TbUserExample example = new TbUserExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andUsernameEqualTo(username);
+		//登陆时过滤掉已经被注销的用户
+		criteria.andStatusEqualTo((byte)1);
 		List<TbUser> list = userMapper.selectByExample(example);
 		// 如果没有此用户名
 		if (null == list || list.size() == 0) {
